@@ -4,12 +4,16 @@
       >The input cannot contain any Special Characters</code
     >
     <div class="card" v-if="!isEditAreaVisible">
-      <div>{{ title }}</div>
+      <div>{{ title }} <code class="status-code-tag">{{`(${status})`}}</code></div>
+
+      <div class="edit-option-wrapper">
+
+        <div :class="`status-div ${getBgColor()} ${!isEditOptionVisible ? 'margin-0':''}`"></div>
+
       <div
         :class="`${isEditOptionVisible ? '' : 'visibility-0'}`"
         class="edit-options"
       >
-        <div :class="`status-div ${getBgColor()}`"></div>
         <i
           class="fa-solid fa-trash delete-icon"
           @click="$emit('handleDeleting', index)"
@@ -17,12 +21,13 @@
         <i class="fa-solid fa-pencil" @click="isEditAreaVisible = true"></i>
       </div>
     </div>
+    </div>
     <div v-if="isEditAreaVisible" class="edit-div">
       <input name="" id="" v-model="editText" />
       <div class="option-div">
         <select name="" id="progress-options" v-model="editedStatus">
           <option value="pending">pending</option>
-          <option value="inprogress">in-progress</option>
+          <option value="in-progress">in-progress</option>
           <option value="completed">completed</option>
         </select>
       </div>
@@ -76,7 +81,7 @@ const getBgColor = () => {
   let bgColor = "";
   if (props.status === "pending") {
     bgColor = "bg-grey";
-  } else if (props.status === "inprogress") {
+  } else if (props.status === "in-progress") {
     bgColor = "bg-orange";
   } else {
     bgColor = "bg-green";
@@ -87,8 +92,18 @@ const getBgColor = () => {
 </script>
 
 <style scoped>
+
+.status-code-tag {
+  color: lightblue;
+}
+
 i {
   cursor: pointer;
+}
+
+.edit-option-wrapper {
+  display: flex;
+  align-items: center;
 }
 
 .edit-options {
@@ -120,7 +135,11 @@ code {
 }
 
 .visibility-0 {
-  visibility: hidden;
+  display: none;
+}
+
+.margin-0 {
+  margin-right: 0;
 }
 
 .card div:nth-child(1) {

@@ -89,7 +89,7 @@ import Card from "./Card.vue";
 import checkCharacters from "../helpers/checkCharacters";
 
 const isAddOptionVisible = ref<boolean>(false);
-const cardsData = ref<CardType[]>([{ title: "Hello", status: "pending" }]);
+const cardsData = ref<CardType[]>([{ title: "Task1", status: "pending" }]);
 const newTitle = ref<string>("");
 const newStatus = ref<string>("pending");
 const doesContainSpecialChar = ref<boolean>(false);
