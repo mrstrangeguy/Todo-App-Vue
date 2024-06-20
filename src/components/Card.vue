@@ -29,15 +29,12 @@
     </div>
     <div v-if="isEditAreaVisible" class="card__parent-edit-div">
       <textarea v-model="changedTitle" />
-      <Select :status="props.status" @onStatusChange="getStatus"/>
+      <Select :status="props.status" @onStatusChange="getStatus" />
       <div class="todo__button-group">
         <button
           :class="(doesContainSpecialChar || !changedTitle) && 'low-opacity'"
           :disabled="doesContainSpecialChar || !changedTitle"
-          @click="
-            changedTitle.length > 0 &&
-            emitEditFunction(index)
-          "
+          @click="changedTitle.length > 0 && emitEditFunction(index)"
         >
           Edit Card
         </button>
@@ -62,7 +59,7 @@ const props = defineProps<{
   status: string;
 }>();
 
-const emit = defineEmits(['onEdit','onDelete']);
+const emit = defineEmits(["onEdit", "onDelete"]);
 
 const isEditAreaVisible = ref<boolean>(false);
 const changedTitle = ref<string>(props.title);
@@ -76,22 +73,20 @@ watch(changedTitle, (newValue) => {
 
 //functions
 
-const getStatus = (status:string) => {
-   editedStatus.value = status;
-}
+const getStatus = (status: string) => {
+  editedStatus.value = status;
+};
 
-const emitEditFunction = (index:number) => {
-
-  emit('onEdit', changedTitle, index, editedStatus);
+const emitEditFunction = (index: number) => {
+  emit("onEdit", changedTitle, index, editedStatus);
   isEditAreaVisible.value = false;
-}
+};
 
-const emitDeleteFunction = (index:number) => {
-  emit('onDelete', index);
-}
+const emitDeleteFunction = (index: number) => {
+  emit("onDelete", index);
+};
 
 const getBgColor = () => {
-
   if (props.status === "pending") {
     return "bg-grey";
   } else if (props.status === "in-progress") {
@@ -99,28 +94,23 @@ const getBgColor = () => {
   } else {
     return "bg-green";
   }
-
 };
-
-
 </script>
 
 <style scoped lang="scss">
-
 i {
   cursor: pointer;
 }
 
 .card__parent {
-
-   .card__parent-error-code {
+  .card__parent-error-code {
     color: red;
     display: block;
     margin-bottom: 15px;
-   }
+  }
 
   .card__parent-edit-div {
-      textarea {
+    textarea {
       width: 100%;
       display: block;
       border: 0;
@@ -145,25 +135,23 @@ i {
   border-radius: 15px;
   flex-wrap: wrap;
 
-    .card__title {
-
-      code {
+  .card__title {
+    code {
       color: lightblue;
-      }
-
     }
+  }
 
-    .card__title-edit-options-wrapper{
-        display: flex;
-        align-items: center;
+  .card__title-edit-options-wrapper {
+    display: flex;
+    align-items: center;
 
-        .card__title-status-div {
-            height: 1.5em;
-            width: 3em;
-            margin-right: 15px;
-            border-radius: 8px;
-          }
-      }
+    .card__title-status-div {
+      height: 1.5em;
+      width: 3em;
+      margin-right: 15px;
+      border-radius: 8px;
+    }
+  }
 }
 
 .visibility-0 {
@@ -199,7 +187,7 @@ i {
 }
 
 //media query
-@media screen and (max-width:600px) {
+@media screen and (max-width: 600px) {
   .card {
     flex-direction: column;
     gap: 15px;
@@ -224,10 +212,8 @@ i {
     justify-content: space-between;
   }
 
-  .card .card__title-edit-options-wrapper 
-  .card__title-status-div {
+  .card .card__title-edit-options-wrapper .card__title-status-div {
     width: 40%;
   }
 }
-
 </style>
