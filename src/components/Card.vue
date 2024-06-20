@@ -1,52 +1,49 @@
 <template>
-  <div class="card-parent">
-    <code v-if="doesContainSpecialChar"
+  <div class="card__parent">
+    <code class="card__parent-error-code" v-if="doesContainSpecialChar"
       >The input cannot contain any Special Characters</code
     >
     <div class="card" v-if="!isEditAreaVisible">
-      <div>{{ title }} <code class="status-code-tag">{{`(${status})`}}</code></div>
+      <div class="card__title">
+        {{ title }} <code>{{ `(${status})` }}</code>
+      </div>
 
-      <div class="edit-option-wrapper">
+      <div class="card__title-edit-options-wrapper">
+        <div
+          :class="`card__title-status-div ${getBgColor()} ${
+            !isEditOptionVisible && 'margin-change'
+          }`"
+        ></div>
 
-        <div :class="`status-div ${getBgColor()} ${!isEditOptionVisible ? 'margin-0':''}`"></div>
-
-      <div
-        :class="`${isEditOptionVisible ? '' : 'visibility-0'}`"
-        class="edit-options"
-      >
-        <i
-          class="fa-solid fa-trash delete-icon"
-          @click="$emit('handleDeleting', index)"
-        ></i>
-        <i class="fa-solid fa-pencil" @click="isEditAreaVisible = true"></i>
+        <div
+          :class="`${!isEditOptionVisible && 'visibility-0'}`"
+          class="card__title-edit-options-icons"
+        >
+          <i
+            class="fa-solid fa-trash delete-icon"
+            @click="emitDeleteFunction(index)"
+          ></i>
+          <i class="fa-solid fa-pencil" @click="isEditAreaVisible = true"></i>
+        </div>
       </div>
     </div>
-    </div>
-    <div v-if="isEditAreaVisible" class="edit-div">
-      <input name="" id="" v-model="editText" />
-      <div class="option-div">
-        <select name="" id="progress-options" v-model="editedStatus">
-          <option value="pending">pending</option>
-          <option value="in-progress">in-progress</option>
-          <option value="completed">completed</option>
-        </select>
-      </div>
-      <div class="btns edit-cards">
+    <div v-if="isEditAreaVisible" class="card__parent-edit-div">
+      <input v-model="changedTitle" />
+      <Select :status="props.status" @onStatusChange="getStatus"/>
+      <div class="todo__button-group">
         <button
-          :class="(doesContainSpecialChar || !editText) && 'low-opacity'"
-          :disabled="doesContainSpecialChar || !editText"
+          :class="(doesContainSpecialChar || !changedTitle) && 'low-opacity'"
+          :disabled="doesContainSpecialChar || !changedTitle"
           @click="
-            editText.length > 0 &&
-              $emit('handleEditing', editText, index, editedStatus),
-              (editedValue = ''),
-              (isEditAreaVisible = false)
+            changedTitle.length > 0 &&
+            emitEditFunction(index)
           "
         >
           Edit Card
         </button>
         <i
           class="fa-solid fa-xmark"
-          @click="(isEditAreaVisible = false), (editText = title)"
+          @click="(isEditAreaVisible = false), (changedTitle = title)"
         ></i>
       </div>
     </div>
@@ -56,6 +53,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import checkCharacters from "../helpers/checkCharacters";
+import Select from "./Select.vue";
 
 const props = defineProps<{
   title: string;
@@ -64,63 +62,75 @@ const props = defineProps<{
   status: string;
 }>();
 
+const emit = defineEmits(['onEdit','onDelete']);
+
 const isEditAreaVisible = ref<boolean>(false);
-const editedValue = ref<string>("");
-const editText = ref<string>(props.title);
+const changedTitle = ref<string>(props.title);
 const doesContainSpecialChar = ref<boolean>(false);
 const editedStatus = ref<string>(props.status);
 //watch
-watch(editText, (newValue, oldValue) => {
-  if (checkCharacters(newValue)) {
-    doesContainSpecialChar.value = true;
-  } else doesContainSpecialChar.value = false;
+watch(changedTitle, (newValue) => {
+ 
+  doesContainSpecialChar.value = checkCharacters(newValue);
 });
 
 //functions
+
+const getStatus = (status:string) => {
+   editedStatus.value = status;
+}
+
+const emitEditFunction = (index:number) => {
+
+  emit('onEdit', changedTitle, index, editedStatus);
+  isEditAreaVisible.value = false;
+}
+
+const emitDeleteFunction = (index:number) => {
+  emit('onDelete', index);
+}
+
 const getBgColor = () => {
-  let bgColor = "";
+
   if (props.status === "pending") {
-    bgColor = "bg-grey";
+    return "bg-grey";
   } else if (props.status === "in-progress") {
-    bgColor = "bg-orange";
+    return "bg-orange";
   } else {
-    bgColor = "bg-green";
+    return "bg-green";
   }
 
-  return bgColor;
 };
+
+
 </script>
 
-<style scoped>
-
-.status-code-tag {
-  color: lightblue;
-}
+<style scoped lang="scss">
 
 i {
   cursor: pointer;
 }
 
-.edit-option-wrapper {
-  display: flex;
-  align-items: center;
-}
+.card__parent {
 
-.edit-options {
-  display: flex;
-  align-items: center;
-}
+   .card__parent-error-code {
+    color: red;
+    display: block;
+    margin-bottom: 15px;
+   }
 
-.status-div {
-  height: 1.5em;
-  width: 3em;
-  background-color: pink;
-  margin-right: 15px;
-  border-radius: 8px;
-}
-
-code {
-  color: red;
+  .card__parent-edit-div {
+      input {
+      width: 100%;
+      display: block;
+      border: 0;
+      border-radius: 10px;
+      outline: none;
+      background-color: rgb(34, 33, 33);
+      padding: 15px 18px;
+      color: white;
+    }
+  }
 }
 
 .card {
@@ -132,13 +142,33 @@ code {
   padding: 10px 18px;
   background-color: rgb(34, 33, 33);
   border-radius: 15px;
+
+    .card__title {
+
+      code {
+      color: lightblue;
+      }
+
+    }
+
+    .card__title-edit-options-wrapper{
+        display: flex;
+        align-items: center;
+
+        .card__title-status-div {
+            height: 1.5em;
+            width: 3em;
+            margin-right: 15px;
+            border-radius: 8px;
+          }
+      }
 }
 
 .visibility-0 {
   display: none;
 }
 
-.margin-0 {
+.margin-change {
   margin-right: 0;
 }
 
@@ -148,21 +178,6 @@ code {
 
 .card i {
   color: white;
-}
-
-input {
-  width: 100%;
-  display: block;
-  border: 0;
-  border-radius: 10px;
-  outline: none;
-  background-color: rgb(34, 33, 33);
-  padding: 15px 18px;
-  color: white;
-}
-
-.edit-cards {
-  padding: 0;
 }
 
 .delete-icon {
