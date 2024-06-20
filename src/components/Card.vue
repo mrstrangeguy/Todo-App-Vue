@@ -1,11 +1,11 @@
 <template>
   <div class="card__parent">
     <code class="card__parent-error-code" v-if="doesContainSpecialChar"
-      >The input cannot contain any Special Characters</code
+      >The input cannot contain any Special Characters or unwanted spaces</code
     >
     <div class="card" v-if="!isEditAreaVisible">
       <div class="card__title">
-        {{ title }} <code>{{ `(${status})` }}</code>
+        <span>{{ title }}</span> <code>{{ `(${status})` }}</code>
       </div>
 
       <div class="card__title-edit-options-wrapper">
@@ -28,7 +28,7 @@
       </div>
     </div>
     <div v-if="isEditAreaVisible" class="card__parent-edit-div">
-      <input v-model="changedTitle" />
+      <textarea v-model="changedTitle" />
       <Select :status="props.status" @onStatusChange="getStatus"/>
       <div class="todo__button-group">
         <button
@@ -70,7 +70,7 @@ const doesContainSpecialChar = ref<boolean>(false);
 const editedStatus = ref<string>(props.status);
 //watch
 watch(changedTitle, (newValue) => {
- 
+  console.log(changedTitle.value);
   doesContainSpecialChar.value = checkCharacters(newValue);
 });
 
@@ -120,7 +120,7 @@ i {
    }
 
   .card__parent-edit-div {
-      input {
+      textarea {
       width: 100%;
       display: block;
       border: 0;
@@ -135,13 +135,15 @@ i {
 
 .card {
   width: 100%;
-  height: 3em;
+  height: fit-content;
   display: flex;
   justify-content: space-between;
+  gap: 15px;
   align-items: center;
   padding: 10px 18px;
   background-color: rgb(34, 33, 33);
   border-radius: 15px;
+  flex-wrap: wrap;
 
     .card__title {
 
@@ -195,4 +197,37 @@ i {
 .bg-green {
   background-color: green;
 }
+
+//media query
+@media screen and (max-width:600px) {
+  .card {
+    flex-direction: column;
+    gap: 15px;
+    height: fit-content;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    min-width: 100%;
+  }
+
+  .card__title {
+    width: 100%;
+    height: fit-content;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .card__title-edit-options-wrapper {
+    width: 100%;
+  }
+
+  .card__title-edit-options-wrapper {
+    justify-content: space-between;
+  }
+
+  .card .card__title-edit-options-wrapper 
+  .card__title-status-div {
+    width: 40%;
+  }
+}
+
 </style>
