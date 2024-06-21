@@ -1,58 +1,199 @@
 <template>
   <div class="todo">
-    <div class="todo__header">
+    <div class="items-center todo__header">
       Blocked
       <div class="todo__header__icon">
-        <i class="fa-solid fa-ellipsis" @click="isOptionsVisible = !isOptionsVisible"></i>
+        <i class="fa-solid fa-ellipsis" @click="openAdditionalOptions"></i>
       </div>
       <div class="todo__header__menu-options" v-if="isOptionsVisible">
-        <div @click="clearAllCards">
+        <div @click="clearAllCards" class="items-center todo__header__menu-options__text">
           <span>Clear all...</span>
         </div>
-        <div @click="
-          (isEditOptionVisible = !isEditOptionVisible),
-          (isOptionsVisible = false)
-          ">
+        <div
+          @click="toggleEditOptionVisibility"
+          class="items-center todo__header__menu-options__text"
+        >
           <span>{{ getDenyOrAllowText }}</span>
         </div>
       </div>
     </div>
     <div class="todo__cards-list" v-if="cardsData.length">
-      <Card v-for="(elem, index) in cardsData" :isEditOptionVisible="isEditOptionVisible" :title="elem.title"
-        :status="elem.status" :key="index" :index="index" @onEdit="editCard" @onDelete="deleteCard" />
+      <Card
+        v-for="(elem, index) in cardsData"
+        :isEditOptionVisible="isEditOptionVisible"
+        :title="elem.title"
+        :status="elem.status"
+        :key="index"
+        :index="index"
+        @onEdit="editCard"
+        @onDelete="deleteCard"
+      />
     </div>
-    <div v-else-if="!cardsData.length && !isAddOptionVisible" class="todo__empty-message-div">
+    <div
+      v-else-if="!cardsData.length && !isAddOptionVisible"
+      class="todo__empty-message-div"
+    >
       No Cards Are Here
     </div>
 
-    <div v-if="isAddOptionVisible" class="todo__card-input-div">
-      <p v-if="doesContainSpecialChar">
+    <div v-if="isAddOptionVisible" class="todo__card-input-container">
+      <p v-if="doesContainSpecialChar" class="todo__card-input-container__warning-text">
         The input cannot contain any Special Characters
       </p>
-      <textarea v-model="titleRef" placeholder="Enter a title for this card...." />
+      <textarea
+        v-model="titleRef"
+        class="input-textarea todo__card-input-container__textinput"
+        placeholder="Enter a title for this card...."
+      />
 
-      <Select :status="'pending'" @onStatusChange="getNewStatus" />
+      <Select :status="'pending'" @onChangeStatus="getNewStatus" />
 
       <div class="todo__button-group">
-        <button :disabled="isDisabled" :class="(!titleRef.length || doesContainSpecialChar) && 'low-opacity'"
-          @click="addNewCard">
+        <button
+          :disabled="isDisabled"
+          :class="(!titleRef.length || doesContainSpecialChar) && 'low-opacity'"
+          @click="addNewCard"
+          class="todo__button-group__button"
+        >
           Add card
         </button>
-        <i @click="isAddOptionVisible = false" class="fa-solid fa-xmark"></i>
+        <i @click="closeAddOption" class="fa-solid fa-xmark todo__button-group__icon"></i>
       </div>
     </div>
 
-    <div class="todo__card-todo-manager" v-if="!isAddOptionVisible">
-      <div>
-        <i @click="isAddOptionVisible = true" class="fa fa-plus"></i>
-        <div class="add-card-text">Add a card</div>
+    <div
+      class="items-center todo__card-manager"
+      v-if="!isAddOptionVisible"
+    >
+      <div class="todo__card-manager__icon-section">
+        <i @click="openAddOption" class="fa fa-plus todo__card-manager__icon-section__icon"></i>
+        <div class="todo__card-manager__icon-section__text">Add a card</div>
       </div>
-
     </div>
   </div>
 </template>
 
 <style lang="scss">
+
+.todo {
+  width: 650px;
+  padding: 15px;
+  border-radius: 40px;
+  background-color: black;
+
+  &__header {
+    color: white;
+    font-size: 20px;
+    padding: 10px 15px;
+    justify-content: space-between;
+    position: relative;
+
+    &__menu-options {
+      margin-top: 15px;
+      width: 8em;
+      height: 10em;
+      position: absolute;
+      right: 0%;
+      top: 60%;
+      background-color: rgb(54, 52, 52);
+      border-radius: 8px;
+
+      &__text {
+        text-align: center;
+        height: 1.8em;
+        cursor: pointer;
+      }
+    }
+  }
+
+  &__cards-list {
+    padding: 10px 0px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__empty-message-div {
+    color: white;
+    padding: 10px 15px;
+  }
+
+  &__card-input-container {
+    margin-top: 5px;
+    color: white;
+
+    &__warning-text {
+      color: red;
+    }
+
+    &__textinput {
+      min-height: 4em;
+      border-radius: 20px;
+      height: fit-content;
+    }
+
+   
+  }
+
+  &__card-manager {
+      
+      display: flex;
+      justify-content: flex-start;
+      height: 6vh;
+      color: white;
+      font-weight: bolder;
+      padding: 0px 18px;
+      margin-top: 5px;
+
+      &__icon-section {
+
+         display: flex;
+         align-items: center;
+
+         &__icon {
+          cursor: pointer;
+          color: white;
+         }
+
+         &__text {
+          color: white;
+          font-weight: 100;
+          font-size: 18px;
+          margin-left: 15px;
+         }
+      }
+    }
+  
+}
+
+.todo__button-group {
+  display: flex;
+  margin: 15px 0px;
+  color: white;
+  gap: 15px;
+
+  &__button {
+    color: white;
+    min-height: 1em;
+    background-color: rgb(33, 150, 243);
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: 900;
+    border-radius: 4px;
+    border: 0;
+    cursor: pointer;
+  }
+
+    &__icon {
+      display: block;
+      text-align: center;
+      height: fit-content;
+      align-self: center;
+      scale: 1.4;
+      cursor: pointer;
+    }
+}
+
 .low-opacity {
   opacity: 0.6;
 }
@@ -65,163 +206,21 @@
   opacity: 0.2;
 }
 
-i {
-  cursor: pointer;
-}
-
-.todo {
-  width: 650px;
-  padding: 15px;
-  border-radius: 40px;
-  background-color: black;
-
-  .todo__header {
-
-    display: flex;
-    color: white;
-    font-size: 20px;
-    padding: 10px 15px;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-
-    div:nth-child(1) {
-      font-weight: 500;
-    }
-
-    .todo__header__menu-options {
-
-      margin-top: 15px;
-      width: 8em;
-      height: 10em;
-      position: absolute;
-      right: 0%;
-      top: 60%;
-      background-color: rgb(54, 52, 52);
-      border-radius: 8px;
-      transition: display 0.4s ease;
-      animation: displayAnimation;
-      animation-duration: 0.5ms;
-      animation-delay: 1ms;
-
-      div {
-        text-align: center;
-        height: 1.8em;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-      }
-    }
-
-  }
-
-  .todo__cards-list {
-    padding: 10px 0px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .todo__empty-message-div {
-    color: white;
-    padding: 10px 15px;
-  }
-
-  .todo__card-input-div {
-
-    margin-top: 5px;
-    color: white;
-
-    p {
-      color: red;
-    }
-
-    textarea {
-      border: 0;
-      background-color: rgb(34, 33, 33);
-      display: block;
-      width: 100%;
-      min-height: 4em;
-      border-radius: 20px;
-      outline: blue;
-      color: white;
-      padding: 15px 18px;
-      height: fit-content;
-    }
-
-  }
-
-  .todo__card-todo-manager {
-
-    display: flex;
-    justify-content: flex-start;
-    height: 6vh;
-    align-items: center;
-    color: white;
-    font-weight: bolder;
-    padding: 0px 18px;
-    margin-top: 5px;
-
-    div {
-      display: flex;
-      align-items: center;
-    }
-
-    button {
-      color: white;
-      font-weight: 100;
-      font-size: 18px;
-      margin-left: 15px;
-    }
-
-    .add-card-text {
-      font-size: 18px;
-      font-family: Arial, Helvetica, sans-serif;
-      margin-left: 10px;
-      font-weight: 100;
-    }
-  }
-}
-
-.todo__button-group {
-  display: flex;
-  margin: 15px 0px;
-  color: white;
-  gap: 15px;
-}
-
-.todo__button-group button {
-  color: white;
-  min-height: 1em;
-  background-color: rgb(33, 150, 243);
-  padding: 12px 20px;
-  font-size: 16px;
-  font-weight: 900;
-  border-radius: 4px;
-  border: 0;
-  cursor: pointer;
-}
-
-.todo__button-group i {
-  display: block;
-  text-align: center;
-  height: fit-content;
-  align-self: center;
-  scale: 1.4;
-}
-
-//response </style>
+//response
+</style>
 
 <script setup lang="ts">
+
 import { computed, ref, watch } from "vue";
+
+import checkCharacters from "../helpers/checkCharacters";
 import { CardType } from "../types/cardType";
 import Card from "./Card.vue";
-import checkCharacters from "../helpers/checkCharacters";
 import Select from "./Select.vue";
 
+
 const isAddOptionVisible = ref<boolean>(false);
-const cardsData = ref<CardType[]>([{ title: "Task1", status: "pending" }]);
+const cardsData = ref<CardType[]>([]);
 const titleRef = ref<string>("");
 const statusRef = ref<string>("pending");
 const doesContainSpecialChar = ref<boolean>(false);
@@ -238,8 +237,8 @@ const addNewCard = () => {
 };
 
 const editCard = (value: string, index: number, status: string) => {
-  cardsData.value[index].title = value;
-  cardsData.value[index].status = status;
+ 
+  cardsData.value[index] = {title:value,status};
 };
 
 const deleteCard = (index: number) => {
@@ -252,23 +251,40 @@ const clearAllCards = () => {
 };
 
 const getNewStatus = (changedStatus: string) => {
-
   statusRef.value = changedStatus;
+};
+
+const closeAddOption = () => {
+  isAddOptionVisible.value = false;
+  titleRef.value = "";
+};
+
+const openAddOption = () => {
+  isAddOptionVisible.value = true;
+  isOptionsVisible.value = false;
+};
+
+const openAdditionalOptions = () => {
+  isAddOptionVisible.value = false;
+  isOptionsVisible.value = !isOptionsVisible.value;
+};
+
+const toggleEditOptionVisibility = () => {
+  isEditOptionVisible.value = !isEditOptionVisible.value ,
+  isOptionsVisible.value = false
 }
 
 //watch
 watch(titleRef, (newValue) => {
-
   doesContainSpecialChar.value = checkCharacters(newValue);
 });
 
 //computed
 const isDisabled = computed(() => {
-  return (!titleRef.value.length || doesContainSpecialChar.value);
-})
+  return !titleRef.value.length || doesContainSpecialChar.value;
+});
 
 const getDenyOrAllowText = computed(() => {
-  return isEditOptionVisible.value ? "Deny Edit" : "Allow Edit"
-})
-
+  return isEditOptionVisible.value ? "Deny Edit" : "Allow Edit";
+});
 </script>

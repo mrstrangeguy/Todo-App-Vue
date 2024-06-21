@@ -6,9 +6,9 @@
       v-model="newStatus"
       @click="returnChangedStatus"
     >
-      <option :value="OptionsEnum.A">{{ OptionsEnum.A }}</option>
-      <option :value="OptionsEnum.B">{{ OptionsEnum.B }}</option>
-      <option :value="OptionsEnum.C">{{ OptionsEnum.C }}</option>
+      <option :value="OptionsEnum.Pending">{{ OptionsEnum.Pending }}</option>
+      <option :value="OptionsEnum.InProgress">{{ OptionsEnum.InProgress }}</option>
+      <option :value="OptionsEnum.Completed">{{ OptionsEnum.Completed }}</option>
     </select>
   </div>
 </template>
@@ -22,14 +22,15 @@ const props = defineProps<{
 }>();
 
 const newStatus = ref<string>(props.status);
-const emit = defineEmits(["onStatusChange"]);
+const emit = defineEmits(["onChangeStatus"]);
 
 const returnChangedStatus = () => {
-  emit("onStatusChange", newStatus.value);
+  emit("onChangeStatus", newStatus.value);
 };
 </script>
 
 <style scoped>
+
 #status-select {
   height: 2.5em;
   border: 0;
