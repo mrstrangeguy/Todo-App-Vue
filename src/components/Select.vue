@@ -18,8 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import { OptionsEnum } from "../helpers/optionsEnum.ts";
 import { ref } from "vue";
+import { OptionsEnum } from "../helpers/optionsEnum.ts";
 
 const props = defineProps<{
   status: string;
