@@ -1,17 +1,20 @@
 <template>
   <div class="todo">
-    <div class="items-center todo__header">
+    <div class="center-elements todo__header">
       Blocked
       <div class="todo__header__icon">
         <i class="fa-solid fa-ellipsis" @click="openAdditionalOptions"></i>
       </div>
       <div class="todo__header__menu-options" v-if="isOptionsVisible">
-        <div @click="clearAllCards" class="items-center todo__header__menu-options__text">
+        <div
+          @click="onClearAllCards"
+          class="center-elements todo__header__menu-options__text"
+        >
           <span>Clear all...</span>
         </div>
         <div
           @click="toggleEditOptionVisibility"
-          class="items-center todo__header__menu-options__text"
+          class="center-elements todo__header__menu-options__text"
         >
           <span>{{ getDenyOrAllowText }}</span>
         </div>
@@ -37,7 +40,10 @@
     </div>
 
     <div v-if="isAddOptionVisible" class="todo__card-input-container">
-      <p v-if="doesContainSpecialChar" class="todo__card-input-container__warning-text">
+      <p
+        v-if="doesContainSpecialChar"
+        class="todo__card-input-container__warning-text"
+      >
         The input cannot contain any Special Characters
       </p>
       <textarea
@@ -50,23 +56,26 @@
 
       <div class="todo__button-group">
         <button
-          :disabled="isDisabled"
+          :disabled="isAddBtnDisabled"
           :class="(!titleRef.length || doesContainSpecialChar) && 'low-opacity'"
           @click="addNewCard"
           class="todo__button-group__button"
         >
           Add card
         </button>
-        <i @click="closeAddOption" class="fa-solid fa-xmark todo__button-group__icon"></i>
+        <i
+          @click="closeAddOption"
+          class="fa-solid fa-xmark todo__button-group__icon"
+        ></i>
       </div>
     </div>
 
-    <div
-      class="items-center todo__card-manager"
-      v-if="!isAddOptionVisible"
-    >
+    <div class="center-elements todo__card-manager" v-if="!isAddOptionVisible">
       <div class="todo__card-manager__icon-section">
-        <i @click="openAddOption" class="fa fa-plus todo__card-manager__icon-section__icon"></i>
+        <i
+          @click="openAddOption"
+          class="fa fa-plus todo__card-manager__icon-section__icon"
+        ></i>
         <div class="todo__card-manager__icon-section__text">Add a card</div>
       </div>
     </div>
@@ -74,7 +83,6 @@
 </template>
 
 <style lang="scss">
-
 .todo {
   width: 650px;
   padding: 15px;
@@ -131,39 +139,34 @@
       border-radius: 20px;
       height: fit-content;
     }
-
-   
   }
 
   &__card-manager {
-      
+    display: flex;
+    justify-content: flex-start;
+    height: 6vh;
+    color: white;
+    font-weight: bolder;
+    padding: 0px 18px;
+    margin-top: 5px;
+
+    &__icon-section {
       display: flex;
-      justify-content: flex-start;
-      height: 6vh;
-      color: white;
-      font-weight: bolder;
-      padding: 0px 18px;
-      margin-top: 5px;
+      align-items: center;
 
-      &__icon-section {
+      &__icon {
+        cursor: pointer;
+        color: white;
+      }
 
-         display: flex;
-         align-items: center;
-
-         &__icon {
-          cursor: pointer;
-          color: white;
-         }
-
-         &__text {
-          color: white;
-          font-weight: 100;
-          font-size: 18px;
-          margin-left: 15px;
-         }
+      &__text {
+        color: white;
+        font-weight: 100;
+        font-size: 18px;
+        margin-left: 15px;
       }
     }
-  
+  }
 }
 
 .todo__button-group {
@@ -184,14 +187,14 @@
     cursor: pointer;
   }
 
-    &__icon {
-      display: block;
-      text-align: center;
-      height: fit-content;
-      align-self: center;
-      scale: 1.4;
-      cursor: pointer;
-    }
+  &__icon {
+    display: block;
+    text-align: center;
+    height: fit-content;
+    align-self: center;
+    scale: 1.4;
+    cursor: pointer;
+  }
 }
 
 .low-opacity {
@@ -205,19 +208,15 @@
 .color-grey {
   opacity: 0.2;
 }
-
-//response
 </style>
 
 <script setup lang="ts">
-
-import { computed, ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 
 import checkCharacters from "../helpers/checkCharacters";
 import { CardType } from "../types/cardType";
 import Card from "./Card.vue";
 import Select from "./Select.vue";
-
 
 const isAddOptionVisible = ref<boolean>(false);
 const cardsData = ref<CardType[]>([]);
@@ -226,6 +225,21 @@ const statusRef = ref<string>("pending");
 const doesContainSpecialChar = ref<boolean>(false);
 const isOptionsVisible = ref<boolean>(false);
 const isEditOptionVisible = ref<boolean>(true);
+
+//watch
+watch(titleRef, (newValue) => {
+  doesContainSpecialChar.value = checkCharacters(newValue);
+});
+
+//computed
+const isAddBtnDisabled = computed(() => {
+  return !titleRef.value.length || doesContainSpecialChar.value;
+});
+
+const getDenyOrAllowText = computed(() => {
+  return isEditOptionVisible.value ? "Deny Edit" : "Allow Edit";
+});
+
 //functions
 
 const addNewCard = () => {
@@ -237,15 +251,14 @@ const addNewCard = () => {
 };
 
 const editCard = (value: string, index: number, status: string) => {
- 
-  cardsData.value[index] = {title:value,status};
+  cardsData.value[index] = { title: value, status };
 };
 
 const deleteCard = (index: number) => {
   cardsData.value.splice(index, 1);
 };
 
-const clearAllCards = () => {
+const onClearAllCards = () => {
   isOptionsVisible.value = false;
   cardsData.value = [];
 };
@@ -270,21 +283,7 @@ const openAdditionalOptions = () => {
 };
 
 const toggleEditOptionVisibility = () => {
-  isEditOptionVisible.value = !isEditOptionVisible.value ,
-  isOptionsVisible.value = false
-}
-
-//watch
-watch(titleRef, (newValue) => {
-  doesContainSpecialChar.value = checkCharacters(newValue);
-});
-
-//computed
-const isDisabled = computed(() => {
-  return !titleRef.value.length || doesContainSpecialChar.value;
-});
-
-const getDenyOrAllowText = computed(() => {
-  return isEditOptionVisible.value ? "Deny Edit" : "Allow Edit";
-});
+  (isEditOptionVisible.value = !isEditOptionVisible.value),
+    (isOptionsVisible.value = false);
+};
 </script>

@@ -9,7 +9,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.items-center {
+.center-elements {
   display: flex;
   align-items: center;
   justify-content: center;

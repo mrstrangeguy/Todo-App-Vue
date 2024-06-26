@@ -1,5 +1,5 @@
 <template>
-  <div class="option-div">
+  <div class="status-selection-section">
     <select
       name=""
       id="status-select"
@@ -7,8 +7,12 @@
       @click="returnChangedStatus"
     >
       <option :value="OptionsEnum.Pending">{{ OptionsEnum.Pending }}</option>
-      <option :value="OptionsEnum.InProgress">{{ OptionsEnum.InProgress }}</option>
-      <option :value="OptionsEnum.Completed">{{ OptionsEnum.Completed }}</option>
+      <option :value="OptionsEnum.InProgress">
+        {{ OptionsEnum.InProgress }}
+      </option>
+      <option :value="OptionsEnum.Completed">
+        {{ OptionsEnum.Completed }}
+      </option>
     </select>
   </div>
 </template>
@@ -30,7 +34,6 @@ const returnChangedStatus = () => {
 </script>
 
 <style scoped>
-
 #status-select {
   height: 2.5em;
   border: 0;

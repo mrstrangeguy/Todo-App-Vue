@@ -1,20 +1,22 @@
 <template>
-  <div class="card__parent">
-    <code class="card__parent__error-warning" v-if="doesContainSpecialChar"
+  <div class="card__wrapper">
+    <code class="card__wrapper__error-warning" v-if="doesContainSpecialChar"
       >The input cannot contain any Special Characters or unwanted spaces</code
     >
-    <div class="items-center card" v-if="!isEditAreaVisible">
+    <div class="center-elements card" v-if="!isEditAreaVisible">
       <div class="card__title">
         <span>{{ title }}</span>
       </div>
 
       <div class="card__edit-options-wrapper">
         <div
-          :class="`items-center card__edit-options-wrapper__status-container ${getBgColor()} ${
+          :class="`center-elements card__edit-options-wrapper__status-container ${getBgColor()} ${
             !isEditOptionVisible && 'margin-change'
           }`"
         >
-          <code class="card__edit-options-wrapper__status-div__status">{{ `(${status})` }}</code>
+          <code class="card__edit-options-wrapper__status-container__status">{{
+            `(${status})`
+          }}</code>
         </div>
 
         <div
@@ -22,28 +24,34 @@
           class="card__edit-options-wrapper__edit-options-icons"
         >
           <i
-            class="fa-solid fa-trash card__edit-options-wrapper__edit-options-icons__icon card__edit-options-wrapper__edit-options-icons__icon--delete-icon"
-            @click="emitDeleteFunction(index)"
+            class="fa-solid fa-trash card__edit-options-wrapper__edit-options-icons__icon"
+            @click="applyDeletion(index)"
           ></i>
-          <i class="fa-solid fa-pencil card__edit-options-wrapper__edit-options-icons__icon card__edit-options-wrapper__edit-options-icons__icon--edit-icon" @click="isEditAreaVisible = true"></i>
+          <i
+            class="fa-solid fa-pencil card__edit-options-wrapper__edit-options-icons__icon"
+            @click="isEditAreaVisible = true"
+          ></i>
         </div>
       </div>
     </div>
-    <div v-if="isEditAreaVisible" class="card__parent__edit-div">
-      <textarea v-model="titleChange" class="input-textarea card__parent__edit-div__textarea" />
+    <div v-if="isEditAreaVisible" class="card__wrapper__edit-section">
+      <textarea
+        v-model="titleChange"
+        class="input-textarea card__wrapper__edit-section__text-input"
+      />
       <Select :status="props.status" @onChangeStatus="getStatus" />
       <div class="todo__button-group">
         <button
           :class="(doesContainSpecialChar || !titleChange) && 'low-opacity'"
           :disabled="doesContainSpecialChar || !titleChange"
-          @click="titleChange.length > 0 && emitEditFunction(index)"
+          @click="applyChange(index)"
           class="todo__button-group__button"
         >
           Edit Card
         </button>
         <i
           class="fa-solid fa-xmark todo__button-group__icon"
-          @click="(isEditAreaVisible = false), (titleChange = title)"
+          @click="closeEditSection"
         ></i>
       </div>
     </div>
@@ -51,7 +59,6 @@
 </template>
 
 <script setup lang="ts">
-
 import { ref, watch } from "vue";
 
 import checkCharacters from "../helpers/checkCharacters";
@@ -67,9 +74,12 @@ const props = defineProps<{
 const emit = defineEmits(["onEdit", "onDelete"]);
 
 const isEditAreaVisible = ref<boolean>(false);
-const titleChange = ref<string>(props.title);
+let currentTitle: string = props.title;
+let currentStatus: string = props.status;
+const titleChange = ref<string>(currentTitle);
 const doesContainSpecialChar = ref<boolean>(false);
-const statusChange = ref<string>(props.status);
+const statusChange = ref<string>(currentStatus);
+
 //watch
 watch(titleChange, (newValue) => {
   doesContainSpecialChar.value = checkCharacters(newValue);
@@ -81,13 +91,22 @@ const getStatus = (status: string) => {
   statusChange.value = status;
 };
 
-const emitEditFunction = (index: number) => {
+const applyChange = (index: number) => {
+  if (!titleChange.value.length) return;
+
+  currentTitle = props.title;
   emit("onEdit", titleChange, index, statusChange);
   isEditAreaVisible.value = false;
 };
 
-const emitDeleteFunction = (index: number) => {
+const applyDeletion = (index: number) => {
   emit("onDelete", index);
+};
+
+const closeEditSection = () => {
+  isEditAreaVisible.value = false;
+  titleChange.value = currentTitle;
+  statusChange.value = currentStatus;
 };
 
 const getBgColor = () => {
@@ -99,21 +118,18 @@ const getBgColor = () => {
     return "bg-green";
   }
 };
-
 </script>
 
 <style scoped lang="scss">
-
-.card__parent {
-  
+.card__wrapper {
   &__error-warning {
-   color: red;
+    color: red;
     display: block;
     margin-bottom: 15px;
   }
 
-  &__edit-div {
-    &__textarea {
+  &__edit-section {
+    &__text-input {
       border-radius: 20px;
     }
   }
@@ -145,21 +161,19 @@ const getBgColor = () => {
       color: white;
       min-width: 102px;
 
-        &__status {
-          color: white;
-        }
+      &__status {
+        color: white;
+      }
     }
 
     &__edit-options-icons {
-
-         &__icon {
-          cursor: pointer;
-          color: white;
-
-            &--delete-icon {
-              margin-right: 15px;
-            }
-         }
+      &__icon {
+        cursor: pointer;
+        color: white;
+      }
+      &__icon:nth-child(1) {
+        margin-right: 15px;
+      }
     }
   }
 }
@@ -194,23 +208,21 @@ const getBgColor = () => {
     padding-bottom: 15px;
     min-width: 100%;
 
-      &__title {
-        width: 100%;
-        height: fit-content;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
+    &__title {
+      width: 100%;
+      height: fit-content;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    &__edit-options-wrapper {
+      width: 100%;
+      justify-content: space-between;
+
+      &__status-div {
+        width: 40%;
       }
-
-        &__edit-options-wrapper {
-          width: 100%;
-          justify-content: space-between;
-
-            &__status-div {
-              width: 40%;
-            }
-        }
+    }
   }
-
-  
 }
 </style>

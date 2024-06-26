@@ -1,8 +1,7 @@
-const checkCharacters = (value:string) => {
+const checkCharacters = (value: string) => {
+  const regex = /[^a-zA-Z0-9\s]/;
 
-    const regex = /[^a-zA-Z0-9\s]/;
-  
-    return regex.test(value);
-  }
+  return regex.test(value);
+};
 
-export default checkCharacters
+export default checkCharacters;

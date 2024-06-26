@@ -1,5 +1,4 @@
 export interface CardType {
-   title:string;
-   status:string;
+  title: string;
+  status: string;
 }
-
