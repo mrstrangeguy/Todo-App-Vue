@@ -6,12 +6,12 @@
       v-model="newStatus"
       @click="returnChangedStatus"
     >
-      <option :value="OptionsEnum.Pending">{{ OptionsEnum.Pending }}</option>
-      <option :value="OptionsEnum.InProgress">
-        {{ OptionsEnum.InProgress }}
+      <option :value="Options.Pending">{{ Options.Pending }}</option>
+      <option :value="Options.InProgress">
+        {{ Options.InProgress }}
       </option>
-      <option :value="OptionsEnum.Completed">
-        {{ OptionsEnum.Completed }}
+      <option :value="Options.Completed">
+        {{ Options.Completed }}
       </option>
     </select>
   </div>
@@ -19,7 +19,8 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { OptionsEnum } from "../helpers/optionsEnum.ts";
+
+import { Options } from "../helpers/optionsEnum.ts";
 
 const props = defineProps<{
   status: string;

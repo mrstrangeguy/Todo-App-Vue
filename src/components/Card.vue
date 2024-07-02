@@ -62,6 +62,7 @@
 import { ref, watch } from "vue";
 
 import checkCharacters from "../helpers/checkCharacters";
+import { Options } from "../helpers/optionsEnum";
 import Select from "./Select.vue";
 
 const props = defineProps<{
@@ -110,9 +111,9 @@ const closeEditSection = () => {
 };
 
 const getBgColor = () => {
-  if (props.status === "pending") {
+  if (props.status === Options.Pending) {
     return "bg-grey";
-  } else if (props.status === "in-progress") {
+  } else if (props.status === Options.InProgress) {
     return "bg-orange";
   } else {
     return "bg-green";
