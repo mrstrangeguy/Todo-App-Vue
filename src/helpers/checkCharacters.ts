@@ -1,16 +1,7 @@
-const checkCharacters = (value:string) => {
+const checkCharacters = (value: string) => {
+  const regex = /[^a-zA-Z0-9\s]/;
 
-    let check = false;
-    let characters = 'abcdefghijklmnopqrstuvwxyz1234567890';
-    for(let i = 0;i<value.length;i++) {
-     console.log(characters.indexOf(value[i]));
-     if(value[i]!==" " && characters.indexOf(value[i].toLocaleLowerCase()) === -1) {
-      check = true;
-      break;
-     }
-    }
+  return regex.test(value);
+};
 
-    return check;
-  }
-
-export default checkCharacters
+export default checkCharacters;

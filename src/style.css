@@ -8,3 +8,19 @@ body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.center-elements {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-textarea {
+  width: 100%;
+  display: block;
+  border: 0;
+  outline: none;
+  background-color: rgb(34, 33, 33);
+  padding: 15px 18px;
+  color: white;
+}
